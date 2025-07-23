@@ -3,15 +3,17 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-import MathJax, { initMathJax, renderByMathjax } from "mathjax-vue3";
+import MathJax, { initMathJax } from 'mathjax-vue3'
 
-function onMathJaxReady() {
-  const el = document.getElementById("elementId");
-  renderByMathjax(el);
-}
 initMathJax({
-  url: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.min.js',
-}, onMathJaxReady);
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']]
+  },
+  svg: {
+    fontCache: 'global'
+  }
+})
 
 const app = createApp(App)
 app.use(router)

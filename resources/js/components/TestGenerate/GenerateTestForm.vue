@@ -19,6 +19,7 @@
     <div class="buttons">
       <button @click="addBlock">+ Thêm khối</button>
       <button @click="submit">Tạo đề</button>
+      <button @click="resetTest" class="danger">🗑️ Xóa đề</button>
     </div>
 
     <div v-if="warnings.length" class="warnings">
@@ -44,6 +45,12 @@
 import { onMounted, watch } from 'vue'
 import { renderByMathjax } from 'mathjax-vue3'
 import { useGenerateTest } from '@/store/useGenerateTest.js'
+
+  function resetTest() {
+  structure.splice(0, structure.length, { subject_id: '', type_id: '', quantity: 1 })
+  questions.value = []
+  warnings.value = []
+}
 
 const {
   structure, subjects, types,

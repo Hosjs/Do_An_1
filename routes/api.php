@@ -11,9 +11,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:Admin')->post('/tests/generate', [TestController::class, 'generateTest']);
     Route::middleware('role:Admin')->get('/subjects', [TestController::class, 'getSubjects']);
     Route::middleware('role:Admin')->get('/question-types', [TestController::class, 'getQuestionTypes']);
+    Route::middleware('role:Admin')->delete('/tests/{id}', [TestController::class, 'destroy']);
 
     Route::middleware('role:Admin')->get('/tests', [TestController::class, 'index']);
     Route::middleware('role:Admin')->get('/tests/{id}', [TestController::class, 'show']);
+    Route::get('/tests/{id}', [TestController::class, 'show']);
+
 
     Route::middleware('role:Admin')->get('/admin-only', function () {
         return response()->json(['message' => 'Welcome admin!']);

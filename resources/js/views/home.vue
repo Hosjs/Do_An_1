@@ -32,11 +32,11 @@ function toggleSidebar() {
 }
 
 function handleViewDetails() {
-  router.push('/exam-detail') // hoặc route cụ thể của bài thi
+  router.push('/admin/tests')
 }
 
 function handleStartTest() {
-  router.push('/start-exam')
+  router.push('/admin/tests')
 }
 </script>
 

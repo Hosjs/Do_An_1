@@ -25,6 +25,24 @@ export const useTestStore = defineStore('test', {
         },
       })
       this.selectedTest = res.data
+    },
+    async deleteTest(id) {
+      const auth = useAuthStore()
+      await axios.delete(`/api/tests/${id}`, {
+        headers: {
+          Authorization: `Bearer ${auth.token}`
+        }
+      })
+    },
+    async fetchTestBegin(id) {
+      const auth = useAuthStore();
+      const res = await axios.get(`/api/tests/testBegin/${id}`, {
+        headers: {
+            Authorization: `Bearer ${auth.token}`,
+        },
+      })
+      this.selectedTest = res.data
     }
+    
   }
 })

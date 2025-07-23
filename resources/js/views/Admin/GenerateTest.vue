@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <h1>Trộn đề cho Admin</h1>
+    <h1>Tạo đề thi</h1>
     <GenerateTestForm />
   </div>
 </template>

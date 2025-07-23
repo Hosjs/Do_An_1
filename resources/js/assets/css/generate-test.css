@@ -9,7 +9,18 @@
   gap: 1rem;
   margin-bottom: 0.5rem;
 }
-
+.danger {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin-left: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.danger:hover {
+  background-color: #b02a37;
+}
 .structure-item select,
 .structure-item input {
   flex: 1;

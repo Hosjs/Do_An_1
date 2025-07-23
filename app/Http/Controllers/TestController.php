@@ -84,7 +84,6 @@ class TestController extends Controller
         $tests = Test::with('subject')->orderBy('created_at', 'desc')->get();
         return response()->json($tests);
     }
-
     public function show($id)
     {
         $test = Test::with([
@@ -93,6 +92,14 @@ class TestController extends Controller
         ])->findOrFail($id);
 
         return response()->json($test);
+    }
+    public function destroy($id)
+    {
+        $test = Test::findOrFail($id);
+        $test->details()->delete(); // nếu có quan hệ
+        $test->delete();
+
+        return response()->json(['message' => 'Xóa đề thành công']);
     }
 }
 
