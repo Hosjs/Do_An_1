@@ -49,7 +49,14 @@ const routes = [
       {
         path: '/admin/tests/result',
         name: 'TestResult',
-        component: () => import('@/views/admin/TestResult.vue'),
+        component: () => import('@/views/Admin/TestResult.vue'),
+        props: true
+      },
+      {
+        path: 'dashboard',
+        name: 'DashBoard',
+        component: () => import('../views/Admin/DashBoard.vue'),
+        meta: { requiresAuth: true, role: 'Admin' },
         props: true
       }
     ]

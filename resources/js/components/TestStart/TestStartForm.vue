@@ -10,7 +10,6 @@
       >
         <p class="font-semibold mb-2">Câu {{ index + 1 }}:</p>
 
-        <!-- Câu hỏi chứa công thức toán (v-html) -->
         <p class="text-lg leading-relaxed" v-html="detail.question.content"></p>
 
         <!-- Lựa chọn đáp án -->
@@ -47,14 +46,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useTestStore } from '@/store/test'
 import { renderByMathjax } from 'mathjax-vue3'
-import { nextTick } from 'vue'
+import axios from 'axios'
+import { useAuthStore } from '@/store/auth'
 
 const route = useRoute()
+const router = useRouter()
 const store = useTestStore()
+const auth = useAuthStore()
+
 const answers = ref({})
 const isSubmitted = ref(false)
 const score = ref(0)
@@ -62,14 +65,13 @@ const score = ref(0)
 const test = computed(() => store.selectedTest)
 const total = computed(() => test.value?.details?.length || 0)
 
-import { useRouter } from 'vue-router'
-const router = useRouter()
-
-function submitTest() {
+async function submitTest() {
   if (isSubmitted.value) return
+  isSubmitted.value = true
 
   let correct = 0
   const resultDetails = []
+  const answersPayload = []
 
   for (const detail of test.value.details) {
     const questionId = detail.question.id
@@ -77,15 +79,35 @@ function submitTest() {
     const correctAnswer = detail.question.answers.find(a => a.is_correct == 1)
     const userAnswer = detail.question.answers.find(a => a.id === selectedAnswerId)
 
-    if (selectedAnswerId && correctAnswer && selectedAnswerId === correctAnswer.id) {
-      correct++
-    } else {
+    const isCorrect = selectedAnswerId && correctAnswer && selectedAnswerId === correctAnswer.id
+    if (isCorrect) correct++
+
+    answersPayload.push({
+      question_id: questionId,
+      answer_id: selectedAnswerId || null,
+      score: isCorrect ? 1 : 0
+    })
+
+    if (!isCorrect) {
       resultDetails.push({
         questionContent: detail.question.content,
         correctAnswer: correctAnswer?.content,
         userAnswer: userAnswer?.content || '(Trống)'
       })
     }
+  }
+
+  // ===== GỌI API LƯU VÀO user_answers =====
+  try {
+    await axios.post('/api/tests/storeUserAnswers', {test_id: test.value.id, user_id: auth.user.id, answers: answersPayload, },
+        {
+          headers: {
+              Authorization: `Bearer ${auth.token}`,
+          },
+        
+      })
+  } catch (error) {
+    console.error('Lỗi khi lưu đáp án:', error)
   }
 
   router.push({
@@ -101,7 +123,6 @@ function submitTest() {
 onMounted(async () => {
   const id = route.params.id
   await store.fetchTestDetail(id)
-
   setTimeout(() => {
     const el = document.getElementById('math-container')
     if (el) renderByMathjax(el)
@@ -113,5 +134,4 @@ watch(test, async () => {
   const el = document.getElementById('math-container')
   if (el) renderByMathjax(el)
 })
-
 </script>

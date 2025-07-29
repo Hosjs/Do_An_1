@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\QuestionType;
 use App\Models\Subject;
+use App\Models\UserAnswer;
 
 class TestController extends Controller
 {
@@ -101,5 +102,25 @@ class TestController extends Controller
 
         return response()->json(['message' => 'Xóa đề thành công']);
     }
+    public function storeUserAnswers(Request $request)
+    {
+        $validated = $request->validate([
+            'test_id' => 'required|integer',
+            'user_id' => 'required|integer',
+            'answers' => 'required|array',
+        ]);
+
+        foreach ($validated['answers'] as $ans) {
+            UserAnswer::create([
+                'test_id' => $validated['test_id'],
+                'user_id' => $validated['user_id'],
+                'question_id' => $ans['question_id'],
+                'score' => $ans['score'],
+            ]);
+        }
+
+        return response()->json(['message' => 'Lưu thành công']);
+    }
+
 }
 
