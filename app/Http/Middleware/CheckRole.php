@@ -16,16 +16,18 @@ class CheckRole
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         $user = $request->user();
+        $roleList = collect($roles)
+            ->flatMap(function ($role) {
+                return explode('|', $role);
+            })->unique();
 
-        if (!$user || !$user->roles->pluck('name')->intersect($roles)->count()) {
+        if (!$user || !$user->roles->pluck('name')->intersect($roleList)->count()) {
             return response()->json([
                 'message' => 'Không có quyền truy cập',
                 'your_roles' => $user->roles->pluck('name'),
             ], 403);
-
         }
 
         return $next($request);
     }
-
 }

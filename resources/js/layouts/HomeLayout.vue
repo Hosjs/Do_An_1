@@ -1,6 +1,5 @@
 <template>
   <div class="layout">
-    <Sidebar />
     <div class="content-wrapper">
       <Header />
       <main class="main-view">
@@ -12,7 +11,6 @@
 
 <script setup>
 import Header from '@/components/Header.vue'
-import Sidebar from '@/components/Sidebar.vue'
 </script>
 
 <style scoped>

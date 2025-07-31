@@ -11,8 +11,11 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useTestStore } from '@/store/test'
+import { useAuthStore } from '@/store/auth'
+
 const router = useRouter()
 const store = useTestStore()
+const auth = useAuthStore()
 
 const props = defineProps({
   tests: Array
@@ -20,14 +23,18 @@ const props = defineProps({
 
 // Bắt đầu làm bài
 function goToTest(id) {
-  router.push(`/admin/tests/test-begin/${id}`)
+  if(auth.role === 'Admin' ) {
+    router.push(`/admin/tests/test-begin/${id}`)
+  } else if(auth.role === 'Student'){
+    router.push(`/student/tests/test-begin/${id}`)
+  }
 }
 
 async function deleteTest(id) {
   if (confirm('Bạn có chắc chắn muốn xóa đề này không?')) {
     try {
       await store.deleteTest(id)
-      await store.fetchTests() // cập nhật lại danh sách
+      await store.fetchTests()
     } catch (err) {
       alert('Xóa đề thất bại.')
       console.error(err)

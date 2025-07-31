@@ -1,12 +1,11 @@
 <template>
   <div class="dashboard-container">
-    <!-- Statistic cards -->
     <div class="stats-cards">
       <div class="stat-card yellow">
         <div class="icon">💽</div>
         <div class="info">
-          <h3>Capacity</h3>
-          <p>105GB</p>
+          <h3>Người dùng</h3>
+          <p>3</p>
           <small>Updated now</small>
         </div>
       </div>
@@ -14,8 +13,8 @@
       <div class="stat-card green">
         <div class="icon">💵</div>
         <div class="info">
-          <h3>Revenue</h3>
-          <p>$1,345</p>
+          <h3>Học sinh</h3>
+          <p>1</p>
           <small>Last day</small>
         </div>
       </div>
@@ -23,8 +22,8 @@
       <div class="stat-card red">
         <div class="icon">⚠️</div>
         <div class="info">
-          <h3>Errors</h3>
-          <p>23</p>
+          <h3>Giáo viên</h3>
+          <p>1</p>
           <small>In the last hour</small>
         </div>
       </div>
@@ -32,8 +31,8 @@
       <div class="stat-card blue">
         <div class="icon">🐦</div>
         <div class="info">
-          <h3>Followers</h3>
-          <p>+45</p>
+          <h3>Đang hoạt động</h3>
+          <p>1</p>
           <small>Updated now</small>
         </div>
       </div>
@@ -41,7 +40,7 @@
 
     <!-- Chart area -->
     <div class="chart-card">
-      <h2>Users Behavior <small>(24 Hours performance)</small></h2>
+      <h2>Users performance</h2>
       <canvas id="userChart"></canvas>
     </div>
   </div>
@@ -78,11 +77,11 @@ onMounted(() => {
 
 <style scoped>
 .dashboard-container {
-  padding: 1rem; /* giảm padding */
+  padding: 1rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f8f9fa;
   min-height: 100vh;
-  font-size: 0.9rem; /* thu nhỏ font toàn trang */
+  font-size: 0.9rem;
 }
 
 /* Header */
@@ -90,11 +89,11 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem; /* giảm khoảng cách */
+  margin-bottom: 1.5rem;
 }
 .header-actions span {
   margin-left: 0.75rem;
-  font-size: 0.8rem; /* nhỏ hơn */
+  font-size: 0.8rem;
   color: #6b7280;
 }
 
@@ -102,20 +101,19 @@ onMounted(() => {
 .stats-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-  /* tự co giãn theo màn hình */
-  gap: 0.75rem; /* thu nhỏ khoảng cách */
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
 
 .stat-card {
   display: flex;
   align-items: center;
-  padding: 0.75rem; /* nhỏ hơn */
+  padding: 0.75rem;
   border-radius: 8px;
   color: #fff;
 }
 .stat-card .icon {
-  font-size: 1.5rem; /* nhỏ hơn */
+  font-size: 1.5rem;
   margin-right: 0.75rem;
 }
 
@@ -127,13 +125,13 @@ onMounted(() => {
 /* Chart */
 .chart-card {
   background: #fff;
-  padding: 1rem; /* nhỏ hơn */
+  padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 .chart-card h2 {
   margin-bottom: 0.75rem;
-  font-size: 1rem; /* nhỏ hơn */
+  font-size: 1rem;
 }
 .chart-card small {
   font-weight: normal;

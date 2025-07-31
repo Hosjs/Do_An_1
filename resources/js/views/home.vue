@@ -1,6 +1,5 @@
 <template>
   <div class="home-container">
-    <Header @toggleSidebar="toggleSidebar" />
 
     <div class="content">
       <h1>Đăng ký thi</h1>
@@ -36,7 +35,6 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import Header from '@/components/Header.vue'
 
 const router = useRouter()
 
@@ -46,10 +44,13 @@ function toggleSidebar() {
 
 function handleViewDetails() {
   router.push('/admin/tests')
+  router.push('/student/tests')
+  
 }
 
 function handleStartTest() {
   router.push('/admin/tests')
+  router.push('/student/tests')
 }
 </script>
 

@@ -17,6 +17,8 @@
 
 <script setup>
 import axios from 'axios'
+import { renderByMathjax } from 'mathjax-vue3'
+
 
 const saveScore = async (testId, userId) => {
   const finalScore = ((props.score / props.total) * 10).toFixed(2)

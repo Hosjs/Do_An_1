@@ -5,12 +5,17 @@ import AdminLayout from '../layouts/AdminLayout.vue'
 import StudentLayout from '../layouts/StudentLayout.vue'
 import { useAuthStore } from '../store/auth'
 
+//home layout
+import HomeLayout from '../layouts/HomeLayout.vue'
+
 // Admin pages
 import AdminGenerateTest from '@/views/Admin/GenerateTest.vue'
 import ViewTestList from '../views/Admin/ViewTestList.vue'
 import UserManager from '../views/Admin/UserManager.vue'
 import TestDetail from '@/components/TestGenerate/TestDetail.vue'
-
+import AdTestBegin from '@/views/Admin/TestBegin.vue'
+// Student pages
+import StTestBegin from '@/views/Student/TestBegin.vue'
 // Common test page (ví dụ thử MathJax hoặc mẫu test nhanh)
 import TestJax from '../views/TestJax.vue'
 
@@ -22,8 +27,11 @@ const routes = [
   },
   {
     path: '/',
-    component: Home,
-    meta: { requiresAuth: false }
+    component: HomeLayout,
+    meta: { requiresAuth: false },
+    children: [
+      {path: '', name: 'Home', component: Home },
+    ]
   },
   {
     path: '/login',
@@ -40,30 +48,25 @@ const routes = [
       { path: 'generate-test', name: 'AdminGenerateTest', component: AdminGenerateTest },
       { path: 'tests', component: ViewTestList },
       {
-        path: '/admin/tests/test-begin/:id',
-        name: 'TestBegin',
-        component: () => import('@/views/Admin/TestBegin.vue'),
-        meta: { requiresAuth: true, role: 'Admin' },
-        props: true,
+        path: 'tests/test-begin/:id',
+        name: 'AdTestBegin',
+        component: AdTestBegin,
       },
       {
-        path: '/admin/tests/result',
+        path: 'tests/result',
         name: 'TestResult',
         component: () => import('@/views/Admin/TestResult.vue'),
+        meta: { requiresAuth: true, role: 'Admin' },
         props: true
       },
       {
         path: 'dashboard',
         name: 'DashBoard',
         component: () => import('../views/Admin/DashBoard.vue'),
-        meta: { requiresAuth: true, role: 'Admin' },
         props: true
       }
     ]
-    
   },
-  
-
   {
     path: '/student',
     component: StudentLayout,
@@ -72,11 +75,16 @@ const routes = [
       { path: '', name: 'StudentHome', component: Home },
       { path: 'tests', component: ViewTestList },
       {
-        path: 'tests/:id',
-        name: 'StudentTestDetail',
-        component: TestDetail,
-        props: true
-      }
+        path: 'tests/test-begin/:id',
+        name: 'StTestBegin',
+        component: StTestBegin, 
+      },
+      {
+        path: 'tests/result',
+        name: 'TestResultS',
+        component: () => import('@/views/Student/TestResult.vue'),
+        meta: { requiresAuth: true, role: 'Admin' },
+      },
     ]
   },
   {

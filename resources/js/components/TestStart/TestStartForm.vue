@@ -66,6 +66,13 @@ const test = computed(() => store.selectedTest)
 const total = computed(() => test.value?.details?.length || 0)
 
 async function submitTest() {
+if (auth.user.role === 'Admin') {
+  router.push({ name: 'AdminTestResult' })
+} else {
+  router.push({ name: 'TestResult', state: { score: correct, total, wrongAnswers: resultDetails } })
+}
+
+
   if (isSubmitted.value) return
   isSubmitted.value = true
 
