@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/tests/{id}', [TestController::class, 'destroy']);
         Route::post('/essay-reviews', [EssayReviewController::class, 'store']);
         Route::get('/admin-only', fn () => response()->json(['message' => 'Welcome admin!']));
+        Route::apiResource('users', UserController::class)->except(['show']);
     });
 
     // 🛡️ Chỉ dành cho Student
@@ -33,7 +34,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/tests/storeUserAnswers', [TestController::class, 'storeUserAnswers']);
         Route::get('/tests', [TestController::class, 'index']);
         Route::get('/tests/{id}', [TestController::class, 'show']);
-        Route::get('/tests/test-begin/{id}', [TestController::class, 'testBegin']);
         Route::get('/tests/result', [TestController::class, 'testResult']);
         Route::post('/essay-reviews', [EssayReviewController::class, 'store']);
     });

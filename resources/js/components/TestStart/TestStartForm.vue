@@ -60,19 +60,11 @@ const auth = useAuthStore()
 
 const answers = ref({})
 const isSubmitted = ref(false)
-const score = ref(0)
 
 const test = computed(() => store.selectedTest)
 const total = computed(() => test.value?.details?.length || 0)
 
 async function submitTest() {
-if (auth.user.role === 'Admin') {
-  router.push({ name: 'AdminTestResult' })
-} else {
-  router.push({ name: 'TestResult', state: { score: correct, total, wrongAnswers: resultDetails } })
-}
-
-
   if (isSubmitted.value) return
   isSubmitted.value = true
 
@@ -80,6 +72,7 @@ if (auth.user.role === 'Admin') {
   const resultDetails = []
   const answersPayload = []
 
+  // === Tính điểm ===
   for (const detail of test.value.details) {
     const questionId = detail.question.id
     const selectedAnswerId = answers.value[questionId]
@@ -104,36 +97,42 @@ if (auth.user.role === 'Admin') {
     }
   }
 
-  // ===== GỌI API LƯU VÀO user_answers =====
+  // === Lưu vào DB ===
   try {
-    await axios.post('/api/tests/storeUserAnswers', {test_id: test.value.id, user_id: auth.user.id, answers: answersPayload, },
-        {
-          headers: {
-              Authorization: `Bearer ${auth.token}`,
-          },
-        
-      })
+    await axios.post('/api/tests/storeUserAnswers', {
+      test_id: test.value.id,
+      user_id: auth.user.id,
+      answers: answersPayload,
+    }, {
+      headers: { Authorization: `Bearer ${auth.token}` }
+    })
   } catch (error) {
     console.error('Lỗi khi lưu đáp án:', error)
   }
 
-  router.push({
-    name: 'TestResult',
-    state: {
-      score: correct,
-      total: test.value.details.length,
-      wrongAnswers: resultDetails
-    }
-  })
+  // === Chuyển trang sau khi đã tính điểm ===
+  if (auth.user.role === 'Admin') {
+    router.push({ name: 'AdminTestResult' })
+  } else {
+    router.push({
+      name: 'TestResult',
+      state: {
+        score: correct,
+        total: test.value.details.length,
+        wrongAnswers: resultDetails
+      }
+    })
+  }
 }
 
+// === Lấy dữ liệu đề thi khi mount ===
 onMounted(async () => {
   const id = route.params.id
   await store.fetchTestDetail(id)
-  setTimeout(() => {
-    const el = document.getElementById('math-container')
-    if (el) renderByMathjax(el)
-  }, 0)
+
+  await nextTick()
+  const el = document.getElementById('math-container')
+  if (el) renderByMathjax(el)
 })
 
 watch(test, async () => {
