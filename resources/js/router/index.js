@@ -83,7 +83,7 @@ const routes = [
         path: 'tests/result',
         name: 'TestResultS',
         component: () => import('@/views/Student/TestResult.vue'),
-        meta: { requiresAuth: true, role: 'Admin' },
+        meta: { requiresAuth: true, role: 'Student' },
       },
     ]
   },
@@ -99,7 +99,7 @@ const routes = [
         name: 'TeacherTestDetail',
         component: TestDetail,
         props: true
-      }
+      },
     ]
   }
 ]
