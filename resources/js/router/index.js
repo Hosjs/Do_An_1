@@ -14,8 +14,10 @@ import ViewTestList from '../views/Admin/ViewTestList.vue'
 import UserManager from '../views/Admin/UserManager.vue'
 import TestDetail from '@/components/TestGenerate/TestDetail.vue'
 import AdTestBegin from '@/views/Admin/TestBegin.vue'
+import TestAnswer from '@/views/TestAnswer.vue'
 // Student pages
 import StTestBegin from '@/views/Student/TestBegin.vue'
+import StTestResult from '@/views/Student/TestResult.vue'
 // Common test page (ví dụ thử MathJax hoặc mẫu test nhanh)
 import TestJax from '../views/TestJax.vue'
 
@@ -38,6 +40,12 @@ const routes = [
     component: Login,
     meta: { requiresGuest: false }
   },
+  {
+    path: '/test-answer',
+    name: 'TestAnswer',
+    component: TestAnswer
+  },
+    
   {
     path: '/admin',
     component: AdminLayout,
@@ -64,7 +72,7 @@ const routes = [
         name: 'DashBoard',
         component: () => import('../views/Admin/DashBoard.vue'),
         props: true
-      }
+      },
     ]
   },
   {
@@ -82,7 +90,7 @@ const routes = [
       {
         path: 'tests/result',
         name: 'TestResultS',
-        component: () => import('@/views/Student/TestResult.vue'),
+        component: StTestResult,
         meta: { requiresAuth: true, role: 'Student' },
       },
     ]

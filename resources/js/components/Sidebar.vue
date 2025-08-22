@@ -8,21 +8,18 @@
       <router-link to="/admin/tests">👤 Quản lý bài thi</router-link>
       <router-link to="/admin/statistics">📊 Thống kê</router-link>
       <router-link to="/admin/settings">⚙️ Cài đặt</router-link>
-      <router-link to="/logout">Bài giảng</router-link>
     </nav>
     <nav v-if="!isCollapsed && useAuthStore().role === 'Student'" class="menu">
       <router-link to="/student/tests">🎓 Bài thi</router-link>
-      <router-link to="/logout">Bài giảng</router-link>
+      <router-link to="/student/statistics">📊 Thống kê</router-link>
     </nav>
     <nav v-if="!isCollapsed && useAuthStore().role === 'Teacher'" class="menu">
       <router-link to="/teacher/tests">👨‍🏫 Bài thi</router-link>
       <router-link to="/teacher/statistics">📊 Thống kê</router-link>
       <router-link to="/teacher/generate-test">👤 Quản lý đề thi</router-link>
       <router-link to="/teacher/tests">👤 Quản lý bài thi</router-link>
-      <router-link to="/logout">Bài giảng</router-link>
     </nav>
   </aside>
-  
 </template>
 
 <script setup>
@@ -34,5 +31,4 @@ const isCollapsed = ref(false)
 const toggleSidebar = () => {
   isCollapsed.value = !isCollapsed.value
 }
-
 </script>

@@ -133,8 +133,7 @@ async function confirmDelete() {
 }
 
 onMounted(() => {
-  // Optional: bật skeleton khi cần fetch phía ngoài
-  // isLoading.value = true; setTimeout(()=> isLoading.value=false, 600)
+  
 })
 </script>
 

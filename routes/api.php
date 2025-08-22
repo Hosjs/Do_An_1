@@ -11,6 +11,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+    Route::get('/tests/test-answer', [TestController::class, 'userSolution']);
 
     // 🛡️ Chỉ dành cho Admin
     Route::middleware('role:Admin')->group(function () {
@@ -36,5 +37,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/tests/{id}', [TestController::class, 'show']);
         Route::get('/tests/result', [TestController::class, 'testResult']);
         Route::post('/essay-reviews', [EssayReviewController::class, 'store']);
+        
     });
 });

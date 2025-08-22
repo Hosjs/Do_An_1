@@ -15,6 +15,7 @@ class Question extends Model
         'blanks',
         'choices',
         'correct_answer',
+        'solution',
         'created_by'
     ];
 

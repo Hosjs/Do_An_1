@@ -97,7 +97,7 @@ class TestController extends Controller
     public function destroy($id)
     {
         $test = Test::findOrFail($id);
-        $test->details()->delete(); // nếu có quan hệ
+        $test->details()->delete();
         $test->delete();
 
         return response()->json(['message' => 'Xóa đề thành công']);
@@ -122,5 +122,127 @@ class TestController extends Controller
         return response()->json(['message' => 'Lưu thành công']);
     }
 
+    public function userSolutions(Request $request, Test $test)
+    {
+        $includeChoices = (bool) $request->boolean('includeChoices', true);
+        $userId = (int) ($request->input('user_id') ?: optional($request->user())->id);
+        abort_unless($userId, 403, 'Thiếu user.');
+
+        $userAnswers = UserAnswer::where('test_id', $test->id)
+            ->where('user_id', $userId)
+            ->orderBy('id')
+            ->get(['id','test_id','question_id','user_id','score']);
+
+        if ($userAnswers->isEmpty()) {
+            return response()->json([
+                'test_id'   => (int) $test->id,
+                'title'     => $test->title ?? null,
+                'user_id'   => $userId,
+                'questions' => [],
+            ]);
+        }
+
+        $questionIds = $userAnswers->pluck('question_id')->unique()->values();
+
+        $questions = Question::query()
+            ->with(['answers' => function ($q) {
+                $q->select('id','question_id','content','is_correct');
+            }])
+            ->whereIn('id', $questionIds)
+            ->get([
+                'id','subject_id','content','image_url','formula_latex','blanks',
+                'choices','type_id','correct_answer','solution','created_by'
+            ])
+            ->keyBy('id');
+
+        $rows = [];
+        foreach ($userAnswers as $ua) {
+            $q = $questions->get($ua->question_id);
+            if (!$q) continue;
+
+            $choices = [];
+            if ($q->relationLoaded('answers') && $q->answers->count()) {
+                $choices = $q->answers->map(fn($a) => [
+                    'id'         => (int) $a->id,
+                    'content'    => $a->content,
+                    'is_correct' => (int) $a->is_correct,
+                ])->values()->all();
+            } elseif ($includeChoices && !empty($q->choices)) {
+                $choices = $this->choicesFromJson($q->choices, $q->correct_answer);
+            }
+
+            $correctChoices = array_values(array_filter($choices, fn($c) => (int)($c['is_correct'] ?? 0) === 1));
+            $correctAnswerParsed = $this->safeJsonDecode($q->correct_answer) ?? $q->correct_answer;
+
+            $isCorrect = null;
+            if (!is_null($ua->score)) {
+                $isCorrect = ((float)$ua->score) > 0;
+            }
+
+            $rows[] = [
+                'question_id'      => (int) $q->id,
+                'type_id'          => (int) $q->type_id,
+                'content'          => $q->content,
+                'image_url'        => $q->image_url,
+                'formula_latex'    => $q->formula_latex,
+                'blanks'           => (int) $q->blanks,
+                'choices'          => $includeChoices ? $choices : [],
+                'correct_choices'  => $correctChoices,
+                'correct_answer'   => $correctAnswerParsed,
+                'is_correct'       => $isCorrect,
+                'solution'         => $q->solution,
+            ];
+        }
+
+        return response()->json([
+            'test_id'   => (int) $test->id,
+            'title'     => $test->title ?? null,
+            'user_id'   => $userId,
+            'questions' => $rows,
+        ]);
+    }
+
+    private function safeJsonDecode($value)
+    {
+        if (is_array($value)) return $value;
+        if (!is_string($value)) return null;
+        $trim = trim($value);
+        if ($trim === '') return null;
+        try {
+            return json_decode($trim, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    private function choicesFromJson($choicesJson, $correctRaw): array
+    {
+        try {
+            $arr = is_array($choicesJson) ? $choicesJson : json_decode($choicesJson, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Throwable $e) {
+            return [];
+        }
+        $arr = is_array($arr) ? $arr : [];
+        $correctParsed = $this->safeJsonDecode($correctRaw);
+        $correctSet = [];
+
+        if (is_array($correctParsed)) {
+            $correctSet = array_map('strval', $correctParsed);
+        } elseif (is_string($correctRaw) && $correctRaw !== '') {
+            $correctSet = [strval($correctRaw)];
+        }
+
+        $out = [];
+        $i = 1;
+        foreach ($arr as $opt) {
+            $content = is_string($opt) ? $opt : json_encode($opt, JSON_UNESCAPED_UNICODE);
+            $out[] = [
+                'id'         => $i++,
+                'content'    => $content,
+                'is_correct' => in_array(strval($content), $correctSet, true) ? 1 : 0,
+            ];
+        }
+        return $out;
+    }
 }
 

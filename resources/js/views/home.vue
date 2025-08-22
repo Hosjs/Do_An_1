@@ -35,6 +35,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../store/auth'
 
 const router = useRouter()
 
@@ -43,14 +44,27 @@ function toggleSidebar() {
 }
 
 function handleViewDetails() {
-  router.push('/admin/tests')
-  router.push('/student/tests')
-  
+  if(useAuthStore.role === 'Student') {
+    router.push('/student/exam-details')
+  } else if(useAuthStore.role === 'Teacher') {
+    router.push('/teacher/exam-details')
+  } else if(useAuthStore.role === 'Admin') {
+    router.push('/admin/exam-details')
+  } else {
+    router.push('/login')
+  }
 }
 
 function handleStartTest() {
-  router.push('/admin/tests')
-  router.push('/student/tests')
+  if(useAuthStore.role === 'Student') {
+    router.push('/student/exam-details')
+  } else if(useAuthStore.role === 'Teacher') {
+    router.push('/teacher/exam-details')
+  } else if(useAuthStore.role === 'Admin') {
+    router.push('/admin/exam-details')
+  } else {
+    router.push('/login')
+  }
 }
 </script>
 
