@@ -1,8 +1,33 @@
 <template>
   <div class="gtf-page">
     <div class="gtf-card">
-      <div class="gtf-header">
+      <!-- Thông tin bài thi (theo chiều dọc) -->
+      <div class="gtf-header column">
+        <div class="field wide">
+          <label for="testTitle">Tên bài thi</label>
+          <input
+            id="testTitle"
+            type="text"
+            v-model.trim="testTitle"
+            placeholder="Nhập tên bài thi..."
+            aria-label="Tên bài thi"
+            class="input-large"
+          />
+        </div>
+        <div class="field wide">
+          <label for="testDesc">Mô tả</label>
+          <textarea
+            id="testDesc"
+            v-model.trim="testDescription"
+            placeholder="Mô tả ngắn về bài thi..."
+            rows="3"
+            aria-label="Mô tả bài thi"
+            class="textarea-large"
+          ></textarea>
+        </div>
       </div>
+
+      <!-- Danh sách khối -->
       <div class="structure-list">
         <div v-for="(item, i) in structure" :key="i" class="structure-item">
           <div class="field">
@@ -32,14 +57,20 @@
               aria-label="Số lượng câu hỏi"
             />
           </div>
+
+          <!-- Nút xóa block ngay trong block -->
+          <div class="field">
+            <button class="btn danger small" type="button" @click="removeBlock(i)">🗑️ Xóa khối</button>
+          </div>
         </div>
       </div>
 
+      <!-- Nút thao tác -->
       <div class="buttons">
         <button class="btn ghost" type="button" @click="addBlock">+ Thêm khối</button>
 
         <div class="spacer"></div>
-        <button class="btn" type="button" @click="submit">Tạo đề</button>
+        <button class="btn" type="button" @click="handleSubmit">Tạo đề</button>
         <button class="btn danger" type="button" @click="resetTest">🗑️ Xóa đề</button>
       </div>
     </div>
@@ -51,6 +82,7 @@
       </ul>
     </div>
 
+    <!-- GIỮ NGUYÊN phần danh sách câu hỏi -->
     <div v-if="questions.length" class="gtf-card result" id="math-container">
       <div class="gtf-header small">
         <h4>Danh sách câu hỏi</h4>
@@ -67,26 +99,47 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import '@/assets/css/generate-test.css'
 import { renderByMathjax } from 'mathjax-vue3'
 import { useGenerateTest } from '@/store/useGenerateTest.js'
 
-function resetTest() {
-  structure.splice(0, structure.length, { subject_id: '', type_id: '', quantity: 1 })
-  questions.value = []
-  warnings.value = []
-}
-
-function removeBlock(i) {
-  if (structure.length > 1) structure.splice(i, 1)
-}
+const testTitle = ref('')
+const testDescription = ref('')
 
 const {
   structure, subjects, types,
   warnings, questions,
   fetchData, addBlock, submit
 } = useGenerateTest()
+
+function resetTest() {
+  if (Array.isArray(structure)) {
+    structure.splice(0, structure.length, { subject_id: '', type_id: '', quantity: 1 })
+  } else if (structure.value) {
+    structure.value.splice(0, structure.value.length, { subject_id: '', type_id: '', quantity: 1 })
+  }
+  questions.value = []
+  warnings.value = []
+  testTitle.value = ''
+  testDescription.value = ''
+}
+
+function removeBlock(i) {
+  if (Array.isArray(structure)) {
+    if (structure.length > 1) structure.splice(i, 1)
+  } else if (structure.value) {
+    if (structure.value.length > 1) structure.value.splice(i, 1)
+  }
+}
+
+function handleSubmit() {
+  submit({
+    title: testTitle.value,
+    description: testDescription.value,
+    structure: structure.value
+  })
+}
 
 onMounted(() => {
   fetchData()

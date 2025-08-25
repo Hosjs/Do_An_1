@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+import Home from '../views/home.vue'
 import Login from '../views/Login.vue'
 import AdminLayout from '../layouts/AdminLayout.vue'
 import StudentLayout from '../layouts/StudentLayout.vue'
@@ -73,6 +73,12 @@ const routes = [
         component: () => import('../views/Admin/DashBoard.vue'),
         props: true
       },
+      {
+        path: 'statistics',
+        name: 'AdminStatistics',
+        component: () => import('@/views/Admin/Statistics.vue'),
+        props: true
+      }
     ]
   },
   {

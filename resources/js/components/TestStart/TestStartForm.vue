@@ -271,18 +271,14 @@ async function submitTest() {
     clearDraft()
   }
 
-  // Điều hướng theo role
-  if (auth.user.role === 'Admin'|| auth.user.role === 'Teacher'|| auth.user.role === 'Student') {
-    router.push({ name: 'AdminTestResult' })
+  if(useAuthStore.role=== 'Student') {
+    router.push({ name: 'TestResultS', params: { score: correct, total: total.value, wrongAnswers: resultDetails } })
+  } else if(useAuthStore.role==='Teacher') {
+    router.push({ name: 'TestResultT', params: { score: correct, total: total.value, wrongAnswers: resultDetails } })
+  } else if(useAuthStore.role==='Admin') {
+    router.push({ name: 'TestResult', params: { score: correct, total: total.value, wrongAnswers: resultDetails } })
   } else {
-    router.push({
-      name: 'TestResult',
-      state: {
-        score: correct,
-        total: test.value.details.length,
-        wrongAnswers: resultDetails
-      }
-    })
+    router.push({ name: 'TestResultS', params: { score: correct, total: total.value, wrongAnswers: resultDetails } })
   }
 }
 

@@ -15,60 +15,63 @@ use App\Models\UserAnswer;
 class TestController extends Controller
 {
     public function generateTest(Request $request)
-    {
-        $request->validate([
-            'structure' => 'required|array',
-            'structure.*.subject_id' => 'required|exists:subjects,id',
-            'structure.*.type_id' => 'required|exists:question_types,id',
-            'structure.*.quantity' => 'required|integer|min:1',
-        ]);
+{
+    $request->validate([
+        'structure' => 'required|array',
+        'structure.*.subject_id' => 'required|exists:subjects,id',
+        'structure.*.type_id'    => 'required|exists:question_types,id',
+        'structure.*.quantity'   => 'required|integer|min:1',
+        'title'       => 'nullable|string|max:255',   // 👈
+        'description' => 'nullable|string',           // 👈
+    ]);
 
-        $userId = Auth::id();
 
-        $test = Test::create([
-            'user_id' => $userId,
-            'start_time' => null,
-            'end_time' => null,
-            'score' => null,
-            'reviewed' => false,
-        ]);
+    $userId = Auth::id();
 
-        $selectedQuestions = [];
-        $warnings = [];
+    $test = Test::create([
+        'user_id'     => Auth::id(),
+        'start_time'  => null,
+        'end_time'    => null,
+        'score'       => null,
+        'reviewed'    => false,
+        'title'       => $request->input('title'),        // 👈 lưu
+        'description' => $request->input('description'),  // 👈 lưu
+    ]);
 
-        foreach ($request->structure as $block) {
-            $availableCount = Question::where('subject_id', $block['subject_id'])
-                ->where('type_id', $block['type_id'])
-                ->count();
 
-            $questions = Question::where('subject_id', $block['subject_id'])
-                ->where('type_id', $block['type_id'])
-                ->inRandomOrder()
-                ->limit($block['quantity'])
-                ->get();
+    $selectedQuestions = [];
+    $warnings = [];
 
-            if ($questions->count() < $block['quantity']) {
-                $subjectName = optional(\App\Models\Subject::find($block['subject_id']))->name;
-                $typeName = optional(\App\Models\QuestionType::find($block['type_id']))->name;
+    foreach ($request->structure as $block) {
+        $questions = Question::where('subject_id', $block['subject_id'])
+            ->where('type_id',    $block['type_id'])
+            ->inRandomOrder()
+            ->limit($block['quantity'])
+            ->get();
 
-                $warnings[] = "Không đủ câu hỏi cho {$subjectName} - {$typeName} (yêu cầu {$block['quantity']}, có {$questions->count()})";
-            }
-
-            foreach ($questions as $question) {
-                TestDetail::create([
-                    'test_id' => $test->id,
-                    'question_id' => $question->id,
-                ]);
-                $selectedQuestions[] = $question;
-            }
+        if ($questions->count() < $block['quantity']) {
+            $subjectName = optional(Subject::find($block['subject_id']))->name;
+            $typeName    = optional(QuestionType::find($block['type_id']))->name;
+            $warnings[]  = "Không đủ câu hỏi cho {$subjectName} - {$typeName} (yêu cầu {$block['quantity']}, có {$questions->count()})";
         }
 
-        return response()->json([
-            'message' => 'Tạo bài test thành công',
-            'test_id' => $test->id,
-            'questions' => $selectedQuestions,
-            'warnings' => $warnings,
-        ]);
+        foreach ($questions as $question) {
+            TestDetail::create([
+                'test_id'     => $test->id,
+                'question_id' => $question->id,
+            ]);
+            $selectedQuestions[] = $question;
+        }
+    }
+
+    return response()->json([
+        'message'     => 'Tạo bài test thành công',
+        'test_id'     => $test->id,
+        'title'       => $test->title,
+        'description' => $test->description,
+        'questions'   => $selectedQuestions,
+        'warnings'    => $warnings,
+    ]);
     }
      public function getSubjects()
     {
@@ -79,10 +82,13 @@ class TestController extends Controller
     {
         return response()->json(QuestionType::select('id', 'name')->get());
     }
-
     public function index()
     {
-        $tests = Test::with('subject')->orderBy('created_at', 'desc')->get();
+        $tests = Test::query()
+            ->withCount('details')
+            ->orderBy('created_at','desc')
+            ->get(['id','title','description','created_at','reviewed']);
+
         return response()->json($tests);
     }
     public function show($id)
@@ -92,8 +98,17 @@ class TestController extends Controller
             'details.question.answers'
         ])->findOrFail($id);
 
-        return response()->json($test);
+        return response()->json([
+            'id'          => $test->id,
+            'title'       => $test->title,
+            'description' => $test->description,
+            'duration'    => $test->duration,
+            'subject'     => $test->subject,
+            'details'     => $test->details,
+            'created_at'  => $test->created_at,
+        ]);
     }
+
     public function destroy($id)
     {
         $test = Test::findOrFail($id);
@@ -105,22 +120,36 @@ class TestController extends Controller
     public function storeUserAnswers(Request $request)
     {
         $validated = $request->validate([
-            'test_id' => 'required|integer',
-            'user_id' => 'required|integer',
+            'test_id' => 'required|integer|exists:tests,id',
+            'user_id' => 'required|integer|exists:users,id',
             'answers' => 'required|array',
+            'answers.*.question_id' => 'required|integer|exists:questions,id',
+            'answers.*.score'       => 'required|numeric|min:0',
         ]);
 
-        foreach ($validated['answers'] as $ans) {
-            UserAnswer::create([
-                'test_id' => $validated['test_id'],
-                'user_id' => $validated['user_id'],
-                'question_id' => $ans['question_id'],
-                'score' => $ans['score'],
-            ]);
-        }
+        DB::transaction(function () use ($validated) {
+            $rows = [];
+            $now  = now();
+            foreach ($validated['answers'] as $ans) {
+                $rows[] = [
+                    'test_id'     => $validated['test_id'],
+                    'user_id'     => $validated['user_id'],
+                    'question_id' => $ans['question_id'],
+                    'score'       => $ans['score'],
+                    'updated_at'  => $now,
+                    'created_at'  => $now,
+                ];
+            }
+            UserAnswer::upsert(
+                $rows,
+                ['test_id', 'user_id', 'question_id'],
+                ['score','updated_at']
+            );
+        });
 
         return response()->json(['message' => 'Lưu thành công']);
     }
+
 
     public function userSolutions(Request $request, Test $test)
     {

@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Test extends Model
 {
     protected $fillable = [
+        'title',
+        'description',
         'user_id',
         'start_time',
         'end_time',
         'score',
-        'reviewed'
+        'reviewed',
     ];
 
     protected $casts = [
