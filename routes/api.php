@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/tests/{id}', [TestController::class, 'show']);
         Route::get('/tests/result', [TestController::class, 'testResult']);
         Route::post('/essay-reviews', [EssayReviewController::class, 'store']);
-        Route::get('/statistics', [StatisticsController::class, 'store']);
+        Route::get('/statistics', [StatisticsController::class, 'data']);
+        Route::get('/testManagement', [TestManagementController::class, 'data']);
     });
 });

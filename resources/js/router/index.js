@@ -15,6 +15,7 @@ import UserManager from '../views/Admin/UserManager.vue'
 import TestDetail from '@/components/TestGenerate/TestDetail.vue'
 import AdTestBegin from '@/views/Admin/TestBegin.vue'
 import TestAnswer from '@/views/TestAnswer.vue'
+import TestManagement from '../components/TestManagement/TestManagement.vue'
 // Student pages
 import StTestBegin from '@/views/Student/TestBegin.vue'
 import StTestResult from '@/views/Student/TestResult.vue'
@@ -76,7 +77,13 @@ const routes = [
       {
         path: 'statistics',
         name: 'AdminStatistics',
-        component: () => import('@/views/Admin/Statistics.vue'),
+        component: () => import('@/views/Admin/statistics.vue'),
+        props: true
+      },
+      {
+        path: 'test-management',
+        name: 'TestManagement',
+        component: TestManagement,
         props: true
       }
     ]

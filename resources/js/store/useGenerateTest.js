@@ -1,10 +1,13 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { useAuthStore } from './auth'
+import { Title } from 'chart.js'
 
 export function useGenerateTest() {
   const auth = useAuthStore()
-  const structure = ref([{ subject_id: '', type_id: '', quantity: 1 }])
+  const structure = ref([{subject_id: '', type_id: '', quantity: 1 }])
+  const title = ref([])
+  const description = ref([])
   const subjects = ref([])
   const types = ref([])
   const questions = ref([])
@@ -33,7 +36,11 @@ export function useGenerateTest() {
 
   const submit = async () => {
     try {
-      const res = await axios.post('/api/tests/generate', {structure: structure.value}, {
+      const res = await axios.post('/api/tests/generate', {
+        structure: structure.value,
+        title: title.value || 'Đề thi',
+        description: description.value || 'Đề thi được tạo tự động',
+      }, {
         headers: {
             Authorization: `Bearer ${auth.token}`,
         },

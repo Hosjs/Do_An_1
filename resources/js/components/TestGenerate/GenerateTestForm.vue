@@ -4,21 +4,21 @@
       <!-- Thông tin bài thi (theo chiều dọc) -->
       <div class="gtf-header column">
         <div class="field wide">
-          <label for="testTitle">Tên bài thi</label>
+          <label for="title">Tên bài thi</label>
           <input
-            id="testTitle"
+            id="title"
             type="text"
-            v-model.trim="testTitle"
+            v-model="title"
             placeholder="Nhập tên bài thi..."
             aria-label="Tên bài thi"
             class="input-large"
           />
         </div>
         <div class="field wide">
-          <label for="testDesc">Mô tả</label>
+          <label for="description">Mô tả</label>
           <textarea
-            id="testDesc"
-            v-model.trim="testDescription"
+            id="description"
+            v-model="description"
             placeholder="Mô tả ngắn về bài thi..."
             rows="3"
             aria-label="Mô tả bài thi"
@@ -104,13 +104,10 @@ import '@/assets/css/generate-test.css'
 import { renderByMathjax } from 'mathjax-vue3'
 import { useGenerateTest } from '@/store/useGenerateTest.js'
 
-const testTitle = ref('')
-const testDescription = ref('')
-
 const {
   structure, subjects, types,
   warnings, questions,
-  fetchData, addBlock, submit
+  fetchData, addBlock, submit,title,description
 } = useGenerateTest()
 
 function resetTest() {
@@ -135,8 +132,8 @@ function removeBlock(i) {
 
 function handleSubmit() {
   submit({
-    title: testTitle.value,
-    description: testDescription.value,
+    title,
+    description,
     structure: structure.value
   })
 }

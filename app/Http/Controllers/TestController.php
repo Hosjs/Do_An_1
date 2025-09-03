@@ -21,8 +21,8 @@ class TestController extends Controller
         'structure.*.subject_id' => 'required|exists:subjects,id',
         'structure.*.type_id'    => 'required|exists:question_types,id',
         'structure.*.quantity'   => 'required|integer|min:1',
-        'title'       => 'nullable|string|max:255',   // 👈
-        'description' => 'nullable|string',           // 👈
+        'title'       => 'nullable|string|max:255',
+        'description' => 'nullable|string',
     ]);
 
 
