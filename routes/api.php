@@ -9,11 +9,13 @@ use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\QuestionController;
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
     Route::get('/tests/test-answer', [TestController::class, 'userSolution']);
+    Route::get('/dashboard', [DashboardController::class, 'stats']);
 
     // 🛡️ Chỉ dành cho Admin
     Route::middleware('role:Admin')->group(function () {

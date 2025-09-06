@@ -5,7 +5,7 @@
         <div class="icon">💽</div>
         <div class="info">
           <h3>Người dùng</h3>
-          <p>3</p>
+          <p>{{ stats.users }}</p>
           <small>Updated now</small>
         </div>
       </div>
@@ -14,7 +14,7 @@
         <div class="icon">💵</div>
         <div class="info">
           <h3>Học sinh</h3>
-          <p>1</p>
+          <p>{{ stats.students }}</p>
           <small>Last day</small>
         </div>
       </div>
@@ -23,7 +23,7 @@
         <div class="icon">⚠️</div>
         <div class="info">
           <h3>Giáo viên</h3>
-          <p>1</p>
+          <p>{{ stats.teachers }}</p>
           <small>In the last hour</small>
         </div>
       </div>
@@ -32,7 +32,7 @@
         <div class="icon">🐦</div>
         <div class="info">
           <h3>Đang hoạt động</h3>
-          <p>1</p>
+          <p>{{ stats.active }}</p>
           <small>Updated now</small>
         </div>
       </div>
@@ -47,10 +47,26 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import Chart from 'chart.js/auto'
+import axios from 'axios'
+import '@/assets/css/Dashboard.css'
 
-onMounted(() => {
+const stats = ref({
+  users: 0,
+  students: 0,
+  teachers: 0,
+  active: 0,
+  chart: []
+})
+
+async function fetchStats() {
+  const res = await axios.get('/api/dashboard')
+  stats.value = res.data
+}
+
+onMounted(async () => {
+  await fetchStats()
   const ctx = document.getElementById('userChart')
   new Chart(ctx, {
     type: 'line',
@@ -59,7 +75,7 @@ onMounted(() => {
       datasets: [
         {
           label: 'Users',
-          data: [120, 200, 300, 500, 700, 850, 900],
+          data: stats.value.chart,
           fill: true,
           borderColor: '#4f46e5',
           backgroundColor: 'rgba(79, 70, 229, 0.2)',
@@ -74,69 +90,3 @@ onMounted(() => {
   })
 })
 </script>
-
-<style scoped>
-.dashboard-container {
-  padding: 1rem;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f8f9fa;
-  min-height: 100vh;
-  font-size: 0.9rem;
-}
-
-/* Header */
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-.header-actions span {
-  margin-left: 0.75rem;
-  font-size: 0.8rem;
-  color: #6b7280;
-}
-
-/* Cards */
-.stats-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-}
-
-.stat-card {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem;
-  border-radius: 8px;
-  color: #fff;
-}
-.stat-card .icon {
-  font-size: 1.5rem;
-  margin-right: 0.75rem;
-}
-
-.stat-card.yellow { background: #f59e0b; }
-.stat-card.green  { background: #10b981; }
-.stat-card.red    { background: #ef4444; }
-.stat-card.blue   { background: #3b82f6; }
-
-/* Chart */
-.chart-card {
-  background: #fff;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.chart-card h2 {
-  margin-bottom: 0.75rem;
-  font-size: 1rem;
-}
-.chart-card small {
-  font-weight: normal;
-  color: #6b7280;
-  font-size: 0.8rem;
-}
-
-</style>

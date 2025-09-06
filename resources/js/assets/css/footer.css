@@ -1,0 +1,47 @@
+footer
+{
+    background-color: red;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 0;
+    margin: 0px;
+}
+.footer-item
+{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 40px;
+    padding: 0px 50px;
+}
+.footer-item >div
+{
+    pad: 0px 20px;
+}
+div.footer-item ul
+{
+    list-style-type: none;
+    padding: 0px;
+}
+div.footer-item ul>li
+{
+    margin: 10px 0px;
+}
+a
+{
+    font-size: 16px;
+    color: white;
+    text-decoration: none;
+}
+a:hover
+{
+    font-weight: bold;
+}
+span
+{
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+img
+{
+    height: 150px;
+}

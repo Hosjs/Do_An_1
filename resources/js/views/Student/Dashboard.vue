@@ -9,4 +9,4 @@
 import DashBoard from '@/components/DashBoard/DashBoardForm.vue'
 </script>
 
-<style scoped src="@/assets/css/Dash-board.css" />
+<style scoped src="@/assets/css/Dashboard.css" />

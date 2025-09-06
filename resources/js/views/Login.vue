@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="login-box">
       <h1>Đăng nhập</h1>
-      <p class="sub">Bạn chưa có tài khoản? <a href="#">Đăng ký ngay</a></p>
+      <p class="sub">Bạn chưa có tài khoản? <router-link to="/register">Đăng ký ngay</router-link></p>
 
       <div class="social-login">
         <button class="btn fb">Facebook</button>
