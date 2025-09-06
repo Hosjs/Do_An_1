@@ -11,10 +11,6 @@
           </select>
         </div>
 
-        <tr v-if="!isLoading && !topStudents.length">
-          <td colspan="6" class="empty">Chưa có dữ liệu</td>
-        </tr>
-
         <div class="field">
           <label>Khoảng thời gian</label>
           <div class="date-range">

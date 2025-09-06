@@ -1,13 +1,12 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { useAuthStore } from './auth'
-import { Title } from 'chart.js'
 
 export function useGenerateTest() {
   const auth = useAuthStore()
   const structure = ref([{subject_id: '', type_id: '', quantity: 1 }])
-  const title = ref([])
-  const description = ref([])
+  const title = ref('')
+  const description = ref('')
   const subjects = ref([])
   const types = ref([])
   const questions = ref([])
@@ -63,6 +62,8 @@ export function useGenerateTest() {
 
   return {
     structure, subjects, types, questions, warnings,
+    // expose form fields so components can v-model them
+    title, description,
     fetchData, addBlock, submit, renderContent
   }
 }

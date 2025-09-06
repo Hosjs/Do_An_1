@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\EssayReviewController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\QuestionController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -20,8 +22,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/question-types', [TestController::class, 'getQuestionTypes']);
         Route::delete('/tests/{id}', [TestController::class, 'destroy']);
         Route::post('/essay-reviews', [EssayReviewController::class, 'store']);
+        // Questions management (Admin only)
+        Route::apiResource('questions', QuestionController::class)->only(['store','update','destroy']);
         Route::get('/admin-only', fn () => response()->json(['message' => 'Welcome admin!']));
         Route::apiResource('users', UserController::class)->except(['show']);
+        Route::get('test-management/{id}', [TestManagementController::class, 'data']);
+        Route::get('/questions-manage/{test}', [QuestionController::class, 'index']);
+        Route::post('/questions-manage/{test}', [QuestionController::class, 'store']);
+        Route::put('/questions-manage/{test}', [QuestionController::class, 'update']);
+        Route::delete('/questions-manage/{test}', [QuestionController::class, 'destroy']);
     });
 
     // 🛡️ Chỉ dành cho Student

@@ -193,8 +193,8 @@ function startTimer() {
   timerId = setInterval(() => {
     remainingSeconds.value = calcRemaining()
     if (remainingSeconds.value <= 0 && !isSubmitted.value) {
-        const timeSpentSeconds = Math.max(0, Math.floor((new Date() - new Date(startAt.value)) / 1000))
-        localStorage.setItem(submittedKey.value, '1')
+      const timeSpentSeconds = Math.max(0, Math.floor((new Date() - new Date(startAt.value)) / 1000))
+      if (STORAGE_KEY.value) localStorage.setItem(STORAGE_KEY.value, '1')
       submitTest()
     }
   }, 1000)
@@ -271,14 +271,13 @@ async function submitTest() {
     clearDraft()
   }
 
-  if(useAuthStore.role=== 'Student') {
-    router.push({ name: 'TestResultS', params: { score: correct, total: total.value, wrongAnswers: resultDetails } })
-  } else if(useAuthStore.role==='Teacher') {
-    router.push({ name: 'TestResultT', params: { score: correct, total: total.value, wrongAnswers: resultDetails } })
-  } else if(useAuthStore.role==='Admin') {
-    router.push({ name: 'TestResult', params: { score: correct, total: total.value, wrongAnswers: resultDetails } })
-  } else {
-    router.push({ name: 'TestResultS', params: { score: correct, total: total.value, wrongAnswers: resultDetails } })
+  const navState = { score: correct, total: total.value, wrongAnswers: resultDetails }
+  if (auth.role === 'Student') {
+    router.push({ name: 'TestResultS', state: navState })
+  } else if (auth.role === 'Teacher') {
+    router.push({ name: 'TestResultS', state: navState })
+  } else if (auth.role === 'Admin') {
+    router.push({ name: 'TestResult', state: navState })
   }
 }
 
@@ -287,14 +286,11 @@ onMounted(async () => {
   const id = route.params.id
   await store.fetchTestDetail(id)
 
-  // Lấy duration (phút) từ test (bạn có thể đổi src field)
   const durationMin = Number(test.value?.duration || 0) || 45 // fallback 45'
   const now = new Date()
 
-  // Khôi phục draft nếu có
   const hasDraft = loadDraft()
 
-  // Nếu chưa có start/deadline thì tạo mới
   if (!startAt.value) startAt.value = now.toISOString()
   if (!deadlineAt.value) {
     const dl = new Date(startAt.value)
@@ -304,12 +300,9 @@ onMounted(async () => {
 
   startTimer()
 
-  // Autosave định kỳ (local + server)
   autosaveIntervalId = setInterval(() => {
     if (!isSubmitted.value) {
       saveDraft()
-      // (tuỳ chọn) sync lên server
-      // safeAutosaveToServer().catch(()=>{})
     }
   }, 8000)
 

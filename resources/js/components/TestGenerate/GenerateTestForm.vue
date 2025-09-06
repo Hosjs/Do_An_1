@@ -107,7 +107,7 @@ import { useGenerateTest } from '@/store/useGenerateTest.js'
 const {
   structure, subjects, types,
   warnings, questions,
-  fetchData, addBlock, submit,title,description
+  fetchData, addBlock, submit, title, description
 } = useGenerateTest()
 
 function resetTest() {
@@ -118,8 +118,8 @@ function resetTest() {
   }
   questions.value = []
   warnings.value = []
-  testTitle.value = ''
-  testDescription.value = ''
+  title.value = ''
+  description.value = ''
 }
 
 function removeBlock(i) {
@@ -131,11 +131,9 @@ function removeBlock(i) {
 }
 
 function handleSubmit() {
-  submit({
-    title,
-    description,
-    structure: structure.value
-  })
+  title.value = title.value.trim()
+  description.value = description.value.trim()
+  submit()
 }
 
 onMounted(() => {

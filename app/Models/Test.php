@@ -34,4 +34,8 @@ class Test extends Model
     {
         return $this->hasMany(TestDetail::class);
     }
+    public function questions()
+    {
+        return $this->belongsToMany(Question::class, 'test_details');
+    }
 }

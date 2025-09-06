@@ -4,12 +4,13 @@
     <nav v-if="!isCollapsed && useAuthStore().role === 'Admin'" class="menu">
       <router-link to="/admin/dashboard">🏠 Trang chủ</router-link>
       <router-link to="/admin/users">👤 Quản lý người dùng</router-link>
-      <router-link to="/admin/generate-test">👤 Quản lý đề thi</router-link>
-      <router-link to="/admin/tests">👤 Quản lý bài thi</router-link>
+      <router-link to="/admin/generate-test">👤 Thêm đề thi</router-link>
+      <router-link to="/admin/tests">👤 Danh sách bài thi</router-link>
       <router-link to="/admin/statistics">📊 Thống kê</router-link>
-      <router-link to="/admin/test-management">⚙️ Cài đặt bài thi</router-link>
+      <router-link to="/admin/test-management">⚙️ Chi tiết bài thi</router-link>
     </nav>
     <nav v-if="!isCollapsed && useAuthStore().role === 'Student'" class="menu">
+      <router-link to="/student/dashboard">🏠 Trang chủ</router-link>
       <router-link to="/student/tests">🎓 Bài thi</router-link>
       <router-link to="/student/statistics">📊 Thống kê</router-link>
     </nav>

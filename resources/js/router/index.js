@@ -15,7 +15,9 @@ import UserManager from '../views/Admin/UserManager.vue'
 import TestDetail from '@/components/TestGenerate/TestDetail.vue'
 import AdTestBegin from '@/views/Admin/TestBegin.vue'
 import TestAnswer from '@/views/TestAnswer.vue'
-import TestManagement from '../components/TestManagement/TestManagement.vue'
+import TestManagement from '../views/Admin/TestManagement.vue'
+import TestQuestion from '../components/TestManagement/TestQuestion.vue'
+
 // Student pages
 import StTestBegin from '@/views/Student/TestBegin.vue'
 import StTestResult from '@/views/Student/TestResult.vue'
@@ -52,7 +54,7 @@ const routes = [
     component: AdminLayout,
     meta: { requiresAuth: true, role: 'Admin' },
     children: [
-      { path: '', name: 'AdminHome', component: Home },
+      { path: '', name: 'AdminHome', component: () => import('../views/Admin/DashBoard.vue') },
       { path: 'users', component: UserManager },
       { path: 'generate-test', name: 'AdminGenerateTest', component: AdminGenerateTest },
       { path: 'tests', component: ViewTestList },
@@ -65,7 +67,6 @@ const routes = [
         path: 'tests/result',
         name: 'TestResult',
         component: () => import('@/views/Admin/TestResult.vue'),
-        meta: { requiresAuth: true, role: 'Admin' },
         props: true
       },
       {
@@ -84,6 +85,12 @@ const routes = [
         path: 'test-management',
         name: 'TestManagement',
         component: TestManagement,
+        props: true
+      },
+      {
+        path: 'questions-manage/:id',
+        name: 'AdminQuestionsManage',
+        component: TestQuestion,
         props: true
       }
     ]
@@ -104,7 +111,6 @@ const routes = [
         path: 'tests/result',
         name: 'TestResultS',
         component: StTestResult,
-        meta: { requiresAuth: true, role: 'Student' },
       },
     ]
   },
