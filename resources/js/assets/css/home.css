@@ -1,0 +1,63 @@
+.home-container {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  height: 50px;
+}
+
+.login-link {
+  color: red;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.content h1 {
+  margin-top: 40px;
+}
+
+.exam-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.exam-info p {
+  margin: 10px 0;
+}
+
+.badge.online {
+  background: #dff0d8;
+  color: green;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+.actions {
+  margin-top: 20px;
+}
+
+.btn-detail, .btn-test {
+  padding: 8px 15px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 5px;
+}
+
+.btn-detail {
+  background-color: #ccc;
+}
+
+.btn-test {
+  background-color: red;
+  color: #fff;
+}

@@ -1,0 +1,211 @@
+/* Layout tổng thể */
+.tests-wrap {
+  display: grid;
+  gap: 14px;
+}
+
+.tests-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tests-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.meta .count-pill {
+  background: #eef2ff;
+  color: #3730a3;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Grid card */
+.test-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  padding: 0;
+  list-style: none;
+}
+
+.test-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+  display: grid;
+  gap: 10px;
+  box-shadow: 0 1px 0 rgba(16, 24, 40, 0.04);
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.test-card:hover {
+  transform: translateY(-2px);
+  border-color: #c7d2fe;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.12);
+}
+
+/* Title + Subject */
+.title-row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.test-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #111827;
+  max-width: 75%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subject-pill {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Meta chips */
+.sub-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.meta-chip {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+/* Buttons */
+.btn-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #111827;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, transform .05s ease;
+}
+
+.btn:hover { background: #f3f4f6; }
+.btn:active { transform: translateY(1px); }
+
+.btn.primary {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #fff;
+}
+.btn.primary:hover { background: #1d4ed8; }
+
+.icon-btn {
+  border: 1px solid transparent;
+  background: #f9fafb;
+  color: #111827;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background .15s ease, transform .05s ease;
+}
+.icon-btn:hover { background: #f3f4f6; }
+.icon-btn:active { transform: translateY(1px); }
+
+.icon-btn.danger {
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+}
+.icon-btn.danger:hover {
+  background: #fee2e2;
+}
+
+/* Empty state */
+.empty {
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 28px 16px;
+  text-align: center;
+  color: #6b7280;
+}
+.empty-emoji { font-size: 2rem; margin-bottom: 8px; }
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, .5);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+}
+.modal {
+  width: min(92vw, 420px);
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  border: 1px solid #e5e7eb;
+}
+.modal h4 { margin: 0 0 6px; font-size: 1.05rem; }
+.modal p { margin: 0 0 14px; color: #374151; }
+.modal-actions {
+  display: flex; justify-content: flex-end; gap: 8px;
+}
+
+/* Skeleton */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,.04), transparent);
+  animation: shimmer 1.2s infinite;
+}
+.skeleton-line {
+  height: 14px;
+  background: #f3f4f6;
+  border-radius: 6px;
+}
+.skeleton-line.w-70 { width: 70%; }
+.skeleton-line.w-40 { width: 40%; }
+.skeleton-btn {
+  height: 36px; width: 96px; border-radius: 10px; background: #f3f4f6;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
