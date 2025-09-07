@@ -1,46 +1,38 @@
 <template>
   <div class="dashboard-container">
+    <h1 class="dashboard-title">📊 Thống kê hệ thống</h1>
     <div class="stats-cards">
       <div class="stat-card yellow">
-        <div class="icon">💽</div>
-        <div class="info">
-          <h3>Người dùng</h3>
-          <p>{{ stats.users }}</p>
-          <small>Updated now</small>
+        <div class="icon">👤</div>
+        <div>
+          <div class="stat-label">Người dùng</div>
+          <div class="stat-value">{{ stats.users }}</div>
         </div>
       </div>
-
       <div class="stat-card green">
-        <div class="icon">💵</div>
-        <div class="info">
-          <h3>Học sinh</h3>
-          <p>{{ stats.students }}</p>
-          <small>Last day</small>
+        <div class="icon">🎓</div>
+        <div>
+          <div class="stat-label">Học sinh</div>
+          <div class="stat-value">{{ stats.students }}</div>
         </div>
       </div>
-
-      <div class="stat-card red">
-        <div class="icon">⚠️</div>
-        <div class="info">
-          <h3>Giáo viên</h3>
-          <p>{{ stats.teachers }}</p>
-          <small>In the last hour</small>
-        </div>
-      </div>
-
       <div class="stat-card blue">
-        <div class="icon">🐦</div>
-        <div class="info">
-          <h3>Đang hoạt động</h3>
-          <p>{{ stats.active }}</p>
-          <small>Updated now</small>
+        <div class="icon">👩‍🏫</div>
+        <div>
+          <div class="stat-label">Giáo viên</div>
+          <div class="stat-value">{{ stats.teachers }}</div>
+        </div>
+      </div>
+      <div class="stat-card red">
+        <div class="icon">🟢</div>
+        <div>
+          <div class="stat-label">Đang hoạt động</div>
+          <div class="stat-value">{{ stats.active }}</div>
         </div>
       </div>
     </div>
-
-    <!-- Chart area -->
-    <div class="chart-card">
-      <h2>Users performance</h2>
+    <div class="chart-section">
+      <h2>Biểu đồ người dùng</h2>
       <canvas id="userChart"></canvas>
     </div>
   </div>
@@ -48,9 +40,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import Chart from 'chart.js/auto'
 import axios from 'axios'
-import '@/assets/css/Dashboard.css'
+import Chart from 'chart.js/auto'
 
 const stats = ref({
   users: 0,
@@ -61,7 +52,7 @@ const stats = ref({
 })
 
 async function fetchStats() {
-  const res = await axios.get('/api/dashboard')
+  const res = await axios.get('/api/dashboard-stats')
   stats.value = res.data
 }
 
@@ -74,7 +65,7 @@ onMounted(async () => {
       labels: ['0h', '4h', '8h', '12h', '16h', '20h', '24h'],
       datasets: [
         {
-          label: 'Users',
+          label: 'Người dùng',
           data: stats.value.chart,
           fill: true,
           borderColor: '#4f46e5',

@@ -210,7 +210,6 @@
             <th>Đề thi</th>
             <th>Câu hỏi (ID)</th>
             <th>Điểm</th>
-            <th>Thời điểm</th>
           </tr>
         </thead>
         <tbody>
@@ -226,7 +225,6 @@
                 {{ Number(ua.score) >= 1 ? '1' : '0' }}
               </span>
             </td>
-            <td>{{ formatDate(ua.answered_at) }}</td>
           </tr>
           <tr v-if="!userAnswers.length">
             <td colspan="5" class="empty">Không có dữ liệu</td>
@@ -241,6 +239,7 @@
 import { onMounted, reactive, computed, ref } from 'vue'
 import { useResultsStats } from '@/store/useResultsStats'
 import { useGenerateTest } from '@/store/useGenerateTest'
+window.resultsStore = useResultsStats()
 const isLoading = ref(false)
 const errorMsg = ref('')
 
@@ -265,10 +264,10 @@ const query = reactive({
 })
 
 const stats = computed(() => resultsStore.stats)
-const histogram = computed(() => resultsStore.histogram)            // [{binStart, binEnd, count}]
-const perQuestion = computed(() => resultsStore.perQuestion)        // [{question_id, correct_rate}]
-const topStudents = computed(() => resultsStore.topStudents)        // [{...}]
-const results = computed(() => resultsStore.results)                // list + paging
+const histogram = computed(() => resultsStore.histogram)
+const perQuestion = computed(() => resultsStore.perQuestion)
+const topStudents = computed(() => resultsStore.topStudents)
+const results = computed(() => resultsStore.results)
 
 /* THÊM MỚI: user_answers + KPI tổng đúng/sai */
 const userAnswers = computed(() => resultsStore.userAnswers || [])

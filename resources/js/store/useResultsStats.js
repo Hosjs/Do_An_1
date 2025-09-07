@@ -1,8 +1,10 @@
 // /src/store/useResultsStats.js
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useAuthStore } from './auth'
 
 export const useResultsStats = defineStore('resultsStats', () => {
+  const auth = useAuthStore()
   const stats = ref({
     total_submissions: 0,
     avg_score: 0,
@@ -18,7 +20,7 @@ export const useResultsStats = defineStore('resultsStats', () => {
 
   // Trang hiển thị ở /admin/statistics, dữ liệu JSON lấy tại:
   const BASE_URL = import.meta.env.VITE_API_URL || window.location.origin
-  const STATS_ENDPOINT = '/admin/statistics' // ✅ endpoint BE bạn vừa tạo
+  const STATS_ENDPOINT = '/api/statistics'
 
   async function fetchAll(query) {
     try {
@@ -30,7 +32,10 @@ export const useResultsStats = defineStore('resultsStats', () => {
       const res = await fetch(u.toString(), {
         method: 'GET',
         credentials: 'include',
-        headers: { Accept: 'application/json' },
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${auth.token}`,
+        },
       })
 
       const ct = res.headers.get('content-type') || ''
