@@ -1,5 +1,10 @@
 <template>
   <div class="ra-page">
+    <!-- Search bar -->
+    <div class="gtf-card ra-search">
+      <input type="search" v-model="query.search" placeholder="Tìm kiếm học sinh, đề thi, câu hỏi..." @keyup.enter="refresh" />
+      <button class="btn" @click="refresh">Tìm</button>
+    </div>
     <!-- Filters -->
     <div class="gtf-card ra-filters">
       <div class="filters-row">
@@ -95,112 +100,16 @@
           </svg>
         </div>
       </div>
-
-      <div class="gtf-card chart-card">
-        <div class="chart-header">
-          <h4>Độ khó theo câu (tỉ lệ trả lời đúng)</h4>
-          <span class="badge">{{ perQuestion.length }} câu</span>
-        </div>
-        <div class="chart-body">
-          <!-- Simple bar chart per question -->
-          <svg :viewBox="`0 0 ${chartW} ${chartH}`" class="bars">
-            <g v-for="(q, i) in perQuestion" :key="q.question_id">
-              <rect
-                :x="i * barW2 + barGap2/2"
-                :y="chartH - (q.correct_rate) * (chartH - 20)"
-                :width="barW2 - barGap2"
-                :height="(q.correct_rate) * (chartH - 20)"
-                rx="3" ry="3"
-              ></rect>
-            </g>
-            <text x="0" :y="chartH" class="axis-tick">0%</text>
-            <text :x="chartW-24" :y="chartH" class="axis-tick">100%</text>
-          </svg>
-          <div class="bar-legend">
-            <span>• Cột cao = câu dễ; cột thấp = câu khó.</span>
-          </div>
-        </div>
-      </div>
     </div>
-
-    <!-- Top performers -->
-    <div class="gtf-card ra-table">
-      <div class="table-head">
-        <h4>Top thí sinh</h4>
-        <div class="table-actions">
-          <button class="btn ghost" @click="exportCSV">Xuất CSV</button>
-        </div>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Họ tên</th>
-            <th>Lớp</th>
-            <th>Điểm</th>
-            <th>Thời gian (phút)</th>
-            <th>Ngày làm</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(r, i) in topStudents" :key="r.submission_id">
-            <td>{{ i + 1 }}</td>
-            <td>{{ r.full_name }}</td>
-            <td>{{ r.class_name || '-' }}</td>
-            <td>{{ r.score.toFixed(1) }}</td>
-            <td>{{ Math.round(r.duration_min) }}</td>
-            <td>{{ formatDate(r.submitted_at) }}</td>
-          </tr>
-          <tr v-if="!topStudents.length">
-            <td colspan="6" class="empty">Chưa có dữ liệu</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Raw list (optional, có phân trang nhẹ) -->
-    <div class="gtf-card ra-table">
-      <div class="table-head">
-        <h4>Kết quả gần đây</h4>
-        <div class="pager">
-          <button class="btn ghost" :disabled="page===1" @click="page--; refresh()">« Trước</button>
-          <span>Trang {{ page }}</span>
-          <button class="btn ghost" :disabled="!hasMore" @click="page++; refresh()">Sau »</button>
-        </div>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Thí sinh</th>
-            <th>Đề</th>
-            <th>Điểm</th>
-            <th>Đúng/Sai</th>
-            <th>Thời gian (phút)</th>
-            <th>Ngày nộp</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="r in results" :key="r.submission_id">
-            <td>{{ r.full_name }}</td>
-            <td>{{ r.test_title }}</td>
-            <td>{{ r.score.toFixed(1) }}</td>
-            <td>{{ r.correct }}/{{ r.total }}</td>
-            <td>{{ Math.round(r.duration_min) }}</td>
-            <td>{{ formatDate(r.submitted_at) }}</td>
-          </tr>
-          <tr v-if="!results.length">
-            <td colspan="6" class="empty">Không có dữ liệu</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
     <!-- THÊM MỚI: Bảng chi tiết user_answers -->
     <div class="gtf-card ra-table">
       <div class="table-head">
         <h4>Chi tiết câu trả lời</h4>
+        <div class="table-search">
+          <input type="search" v-model="tableSearchQuery" placeholder="Lọc trong bảng..." />
+        </div>
         <div class="pager">
-          <span class="badge">{{ userAnswers.length }}</span>
+          <span class="badge">{{ filteredUserAnswers.length }}</span>
         </div>
       </div>
       <table>
@@ -214,7 +123,7 @@
         </thead>
         <tbody>
           <tr
-            v-for="ua in userAnswers"
+            v-for="ua in filteredUserAnswers"
             :key="`${ua.user_id}-${ua.test_id}-${ua.question_id}-${ua.answered_at}`"
           >
             <td>{{ ua.user_name }}</td>
@@ -226,7 +135,7 @@
               </span>
             </td>
           </tr>
-          <tr v-if="!userAnswers.length">
+          <tr v-if="!filteredUserAnswers.length">
             <td colspan="5" class="empty">Không có dữ liệu</td>
           </tr>
         </tbody>
@@ -247,6 +156,7 @@ const chartW = 560, chartH = 160
 const barGap = 4
 const barGap2 = 2
 
+const tableSearchQuery = ref('')
 const page = ref(1)
 const hasMore = ref(false)
 
@@ -254,6 +164,7 @@ const resultsStore = useResultsStats()
 const { subjects, types: testTypes, fetchData: fetchMeta } = useGenerateTest()
 
 const query = reactive({
+  search: '',
   subject_id: '',
   test_type: '',
   from_date: '',
@@ -271,10 +182,20 @@ const results = computed(() => resultsStore.results)
 
 /* THÊM MỚI: user_answers + KPI tổng đúng/sai */
 const userAnswers = computed(() => resultsStore.userAnswers || [])
-const totalCorrect = computed(() =>
-  userAnswers.value.reduce((s, a) => s + (Number(a.score) >= 1 ? 1 : 0), 0)
-)
-const totalWrong = computed(() => Math.max(0, userAnswers.value.length - totalCorrect.value))
+const filteredUserAnswers = computed(() => {
+  if (!tableSearchQuery.value) {
+    return userAnswers.value
+  }
+  const q = tableSearchQuery.value.toLowerCase().trim()
+  return userAnswers.value.filter(ua =>
+    ua.user_name?.toLowerCase().includes(q) ||
+    ua.test_title?.toLowerCase().includes(q) ||
+    String(ua.question_id).includes(q)
+  )
+})
+
+const totalCorrect = computed(() => Math.round(stats.value.total_submissions * stats.value.pass_rate))
+const totalWrong = computed(() => Math.max(0, stats.value.total_submissions - totalCorrect.value))
 
 const maxCount = computed(() => Math.max(1, ...histogram.value.map(b => b.count)))
 const barW = computed(() => chartW / Math.max(1, histogram.value.length))
@@ -298,7 +219,8 @@ async function refresh() {
 
 
 function resetFilters() {
-  Object.assign(query, { subject_id: '', test_type: '', from_date: '', to_date: '', pass_mark: 50, page: 1, per_page: 10 })
+  Object.assign(query, { search: '', subject_id: '', test_type: '', from_date: '', to_date: '', pass_mark: 50, page: 1, per_page: 10 })
+  tableSearchQuery.value = ''
   page.value = 1
   refresh()
 }
@@ -321,6 +243,10 @@ onMounted(async () => {
 
 <style scoped>
 .ra-page { display: grid; gap: 16px; }
+
+.ra-search { display: flex; gap: 8px; }
+.ra-search input { flex-grow: 1; height: 40px; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0 12px; font-size: .95rem; outline: none; background: #fff; }
+.ra-search input:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.15); }
 
 .ra-filters .filters-row {
   display: grid;
@@ -370,8 +296,16 @@ select:focus, input:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34
 
 .ra-table .table-head {
   display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 8px; gap: 16px;
 }
+.ra-table .table-head h4 { flex-shrink: 0; }
+.ra-table .table-search { flex-grow: 1; }
+.ra-table .table-search input {
+  width: 100%;
+  height: 36px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0 12px;
+  background: #fff; font-size: .9rem; outline: none;
+}
+.ra-table .table-search input:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.15); }
 .ra-table table { width: 100%; border-collapse: collapse; }
 .ra-table thead th {
   text-align: left; padding: 10px; font-size: .9rem; color: #475569; border-bottom: 1px solid #e5e7eb;
